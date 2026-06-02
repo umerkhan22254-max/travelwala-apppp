@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" type="image/png" href="travelwala-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Travel Wala - Umrah Package Builder</title>
+<style>
+  .app-icon{
+    width:120px;
+    height:120px;
+    display:block;
+    margin:0 auto 15px;
+    border-radius:25px;
+}
+
+.logo{
+    max-width:550px;
+    width:100%;
+    display:block;
+    margin:auto;
+}
+  body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?q=80&w=2070&auto=format&fit=crop'); background-size: cover; background-attachment: fixed; padding: 10px; color: #333; margin: 0; }
+  .container { max-width: 950px; margin: 20px auto; background: rgba(255, 255, 255, 0.98); padding: 25px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
+  .header-container { text-align: center; margin-bottom: 25px; border-bottom: 3px solid #0d47a1; padding-bottom: 15px; }
+  .brand-name { font-size: 40px; font-weight: 900; margin: 0; }
+  .brand-travel { color: #0d47a1; } .brand-wala { color: #d32f2f; }
+  h2 { margin-top:25px; color:#1565c0; border-left: 6px solid #ffd700; padding-left: 12px; font-size: 18px; text-transform: uppercase; background: #f8f9fa; padding: 5px 10px; }
+  table { border-collapse: collapse; width:100%; background:#fff; margin-bottom:10px; border-radius: 8px; overflow: hidden; font-size: 11px;}
+  th, td { border:1px solid #dee2e6; padding:8px; text-align:center; }
+  th { background:#1565c0; color:#fff; }
+  input, select { width:100%; padding:6px; border:1px solid #ced4da; border-radius:4px; font-size: 12px; outline: none; box-sizing: border-box; }
+  .add-btn { padding:8px 15px; cursor:pointer; background:#f39c12; color:#fff; border:none; border-radius:6px; font-weight: bold; margin-bottom: 15px; }
+  .total-row { background:#d4edda !important; font-weight:bold; font-size: 1.1em; color: #155724; }
+  textarea { border:2px solid #25d366; border-radius:8px; padding:15px; width: 100%; margin-top: 15px; font-size: 13px; height: 400px; font-family: monospace; white-space: pre; box-sizing: border-box;}
+  .btn-generate { padding:15px; width: 100%; background:#25d366; color:white; border:none; border-radius:8px; font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+  .btn-generate:hover { background: #128c7e; }
+  .copy-btn { background: #007bff; margin-top: 5px; }
+  .footer-info { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+
+.brand-wrapper{display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap}
+.app-icon{width:100px!important;height:100px!important;margin:0}
+.logo{max-width:500px}
+
+</style>
+
+<meta name="theme-color" content="#0d47a1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+if('serviceWorker' in navigator){
+window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js'));
+}
+</script>
+
+</head>
+<body>
+
+<div class="container">
+  <div class="header-container">
+
+    <div class="brand-wrapper">
+<img src="travelwala-icon.png" alt="Travel Wala Icon" class="app-icon">
+<img src="travel 000000wala-01.jpeg" alt="Travel Wala Logo" class="logo">
+</div>
+
+</div>
+
+  <h2>🏨 Hotel Accommodation (SAR)</h2>
+  <table id="hotelTable">
+    <thead>
+      <tr><th>City</th><th>Hotel Name</th><th>Check-In</th><th>Check-Out</th><th>Nights</th><th>Rate/Night</th><th>Total (SAR)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><input value="Makkah"></td><td><input placeholder="Mak Hotel Name"></td><td><input type="date" class="date-in" onchange="syncDates()"></td><td><input type="date" class="date-out" onchange="syncDates()"></td><td class="nights-cell">0</td><td><input type="number" class="rate-input" value="0" oninput="calculate()"></td><td class="hotel-total-cell">0</td></tr>
+      <tr><td><input value="Madinah"></td><td><input placeholder="Med Hotel Name"></td><td><input type="date" class="date-in" onchange="syncDates()"></td><td><input type="date" class="date-out" onchange="syncDates()"></td><td class="nights-cell">0</td><td><input type="number" class="rate-input" value="0" oninput="calculate()"></td><td class="hotel-total-cell">0</td></tr>
+    </tbody>
+  </table>
+  <button class="add-btn" onclick="addHotelRow()">+ Add More Hotel</button>
+
+  <h2>🛂 Visa Services (SAR)</h2>
+  <table id="visaTable">
+    <thead><tr><th>Visa Type</th><th>No. of Pax</th><th>Rate (SAR)</th><th>Total (SAR)</th></tr></thead>
+    <tbody>
+      <tr><td><input value="Umrah Visa"></td><td><input type="number" class="v-pax" value="1" oninput="calculate()"></td><td><input type="number" class="v-rate" value="0" oninput="calculate()"></td><td class="v-total">0</td></tr>
+    </tbody>
+  </table>
+
+  <h2>✈️ Flight Ticket Builder (PKR)</h2>
+  <table id="flightTable">
+    <thead><tr><th>Ticket Category</th><th>No. Pax</th><th>Rate (PKR)</th><th>Total (PKR)</th></tr></thead>
+    <tbody>
+      <tr><td>Adult Ticket</td><td><input type="number" id="f-adult-pax" value="0" oninput="calculate()"></td><td><input type="number" id="f-adult-rate" value="0" oninput="calculate()"></td><td id="f-adult-total">0</td></tr>
+      <tr><td>Child Ticket</td><td><input type="number" id="f-child-pax" value="0" oninput="calculate()"></td><td><input type="number" id="f-child-rate" value="0" oninput="calculate()"></td><td id="f-child-total">0</td></tr>
+      <tr><td>Infant Ticket</td><td><input type="number" id="f-infant-pax" value="0" oninput="calculate()"></td><td><input type="number" id="f-infant-rate" value="0" oninput="calculate()"></td><td id="f-infant-total">0</td></tr>
+    </tbody>
+  </table>
+  <div style="background: #eef2f7; padding: 15px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      <div><label>Airline Name</label><input id="f-airline" value="N/A"></div>
+      <div><label>Flight 1 Dep</label><input id="f1-dep" placeholder="City: Time:Ing"></div>
+      <div><label>Flight 1 Arr</label><input id="f1-arr" placeholder="City: Time:Ing"></div>
+      <div><label>Flight 2 Dep</label><input id="f2-dep" placeholder="City: Time:Ing"></div>
+      <div><label>Flight 2 Arr</label><input id="f2-arr" placeholder="City: Time:Ing"></div>
+  </div>
+
+  <h2>🚗 Transportation (SAR)</h2>
+  <div style="margin-bottom:10px">
+    <label><b>Vehicle Type: </b></label>
+    <select id="vehicle-type">
+      <option value="N/A"></option>
+      <option value="Toyota Camry (4 Seater)">Toyota Camry (4 Seater)</option>
+      <option value="GMC Yukon (7 Seater)">GMC Yukon (7 Seater)</option>
+      <option value="Hyundai H1 (7 Seater)">Hyundai H1 (7 Seater)</option>
+      <option value="Hiace (12 Seater)">Hiace (12 Seater)</option>
+    </select>
+  </div>
+  <table id="transportTable">
+    <thead>
+      <tr><th>Route / Ziyarat</th><th>Pax/Units</th><th>Rate (SAR)</th><th>Total (SAR)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Jeddah Airport/City → Makkah Hotel</td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+      <tr><td>Makkah Hotel → Madinah Hotel</td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+      <tr><td>Madinah Hotel → Makkah Hotel </td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+      <tr><td>Makkah Hotel → Jeddah Airport/City</td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+      <tr><td>Makkah Ziyarat</td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+      <tr><td>Madinah Ziyarat</td><td><input type="number" class="t-pax" value="0" oninput="calculate()"></td><td><input type="number" class="t-rate" value="0" oninput="calculate()"></td><td class="t-total">0</td></tr>
+    </tbody>
+  </table>
+  <button class="add-btn" onclick="addTransportRow()">+ Add Extra Transport</button>
+
+  <h2>📊 Grand Summary</h2>
+  <table class="summary-table">
+    <tr><th>Total Saudi Riyal (SAR)</th><td id="totalSarDisplay">0</td></tr>
+    <tr><th>ROE (Current Rate)</th><td><input id="roe" type="number" value="78" oninput="calculate()"></td></tr>
+    <tr><th>No. of Persons (Pax)</th><td><input id="total-pax-count" type="number" value="0" oninput="calculate()"></td></tr>
+    <tr><th>Extra Service/Profit (PKR - Per Person)</th><td><input id="extraProfit" type="number" value="0" oninput="calculate()"></td></tr>
+    <tr class="total-row"><th>Grand Total (PKR)</th><td id="totalPkrDisplay">0</td></tr>
+    <tr class="total-row" style="background:#fff3cd !important; color:#856404;"><th>Per Person Cost (PKR)</th><td id="perPersonPkr">0</td></tr>
+  </table>
+
+  <button class="btn-generate" onclick="generateMessage()">Generate WhatsApp Message</button>
+  <textarea id="packageMessage" readonly placeholder="Your professional package details will appear here..."></textarea>
+  <button class="btn-generate copy-btn" onclick="copyMessage()">Copy Message to Clipboard</button>
+  
+  <div class="footer-info">Travel Wala Travel & Tours | Powered by Smart Umrah Builder</div>
+</div>
+
+<script>
+function syncDates() {
+  const rows = document.querySelectorAll('#hotelTable tbody tr');
+  for (let i = 0; i < rows.length; i++) {
+    const checkOutVal = rows[i].querySelector('.date-out').value;
+    if (checkOutVal && rows[i+1]) {
+      rows[i+1].querySelector('.date-in').value = checkOutVal;
+    }
+  }
+  calculate();
+}
+
+function calculate() {
+  let hotelTotalSar = 0, visaTotalSar = 0, transportTotalSar = 0, totalNights = 0;
+
+  // Hotel
+  document.querySelectorAll('#hotelTable tbody tr').forEach(r => {
+    const d1 = new Date(r.querySelector('.date-in').value);
+    const d2 = new Date(r.querySelector('.date-out').value);
+    let nights = 0;
+    if (d1 != "Invalid Date" && d2 != "Invalid Date" && d2 > d1) {
+      nights = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24));
+    }
+    const rate = Number(r.querySelector('.rate-input').value || 0);
+    const rowTot = nights * rate;
+    r.querySelector('.nights-cell').innerText = nights;
+    r.querySelector('.hotel-total-cell').innerText = rowTot;
+    hotelTotalSar += rowTot;
+    totalNights += nights;
+  });
+
+  // Visa
+  document.querySelectorAll('#visaTable tbody tr').forEach(r => {
+    const pax = Number(r.querySelector('.v-pax').value || 0);
+    const rate = Number(r.querySelector('.v-rate').value || 0);
+    const tot = pax * rate;
+    r.querySelector('.v-total').innerText = tot;
+    visaTotalSar += tot;
+  });
+
+  // Transport
+  document.querySelectorAll('#transportTable tbody tr').forEach(r => {
+    const pax = Number(r.querySelector('.t-pax').value || 0);
+    const rate = Number(r.querySelector('.t-rate').value || 0);
+    const tot = pax * rate;
+    r.querySelector('.t-total').innerText = tot;
+    transportTotalSar += tot;
+  });
+
+  // Flight Ticket Total (PKR)
+  const aP = Number(document.getElementById('f-adult-pax').value) || 0;
+  const aR = Number(document.getElementById('f-adult-rate').value) || 0;
+  const cP = Number(document.getElementById('f-child-pax').value) || 0;
+  const cR = Number(document.getElementById('f-child-rate').value) || 0;
+  const iP = Number(document.getElementById('f-infant-pax').value) || 0;
+  const iR = Number(document.getElementById('f-infant-rate').value) || 0;
+  
+  const fTotalPkr = (aP * aR) + (cP * cR) + (iP * iR);
+  document.getElementById('f-adult-total').innerText = (aP * aR).toLocaleString();
+  document.getElementById('f-child-total').innerText = (cP * cR).toLocaleString();
+  document.getElementById('f-infant-total').innerText = (iP * iR).toLocaleString();
+
+  // Grand Summary
+  const totalSar = hotelTotalSar + visaTotalSar + transportTotalSar;
+  const roe = Number(document.getElementById('roe').value || 78);
+  const extraPerPerson = Number(document.getElementById('extraProfit').value || 0);
+  const totalPax = Number(document.getElementById('total-pax-count').value) || 1;
+
+  // Calculation: (Total SAR * ROE) + Flight Tickets PKR + (Extra per person * Total Pax)
+  const grandTotalPkr = (totalSar * roe) + fTotalPkr + (extraPerPerson * totalPax);
+  const perPerson = grandTotalPkr / totalPax;
+
+  document.getElementById('totalSarDisplay').innerText = totalSar.toLocaleString();
+  document.getElementById('totalPkrDisplay').innerText = Math.round(grandTotalPkr).toLocaleString();
+  document.getElementById('perPersonPkr').innerText = Math.round(perPerson).toLocaleString();
+
+  return {totalNights, totalPax};
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return "N/A";
+  const d = new Date(dateStr);
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${String(d.getDate()).padStart(2,'0')}-${months[d.getMonth()]}-${d.getFullYear()}`;
+}
+
+function generateMessage() {
+  const {totalNights, totalPax} = calculate();
+  let airline = document.getElementById('f-airline').value || "N/A";
+  let vehicle = document.getElementById('vehicle-type').value;
+  
+  let msg = `🌟 *TRAVEL WALA TRAVEL & TOURS* 🌟\n`;
+  msg += `🕌 *UMRAH PACKAGE DETAILS 2026* 🕋\n`;
+  msg += `📅 *Duration: ${totalNights + 1} Days / ${totalNights} Nights*\n`;
+  msg += `👥 *Number of Persons:* ${totalPax}\n\n`;
+
+  document.querySelectorAll('#hotelTable tbody tr').forEach(r => {
+    const hotel = r.cells[1].querySelector('input').value;
+    if (hotel) {
+      msg += `🏨 *${r.cells[0].querySelector('input').value} Hotel:* ${hotel}\n`;
+      msg += `📅 *Check → In:* ${formatDate(r.cells[2].querySelector('input').value)}\n`;
+      msg += `📅 *Check → Out:* ${formatDate(r.cells[3].querySelector('input').value)}\n`;
+      msg += `🌙 *Nights:* ${r.cells[4].innerText}\n\n`;
+    }
+  });
+
+  msg += `🚗 *Transport Type:* ${vehicle}\n`;
+  document.querySelectorAll('#transportTable tbody tr').forEach(r => {
+    const routeInput = r.cells[0].querySelector('input');
+    const routeName = routeInput ? routeInput.value : r.cells[0].innerText;
+    const paxValue = Number(r.querySelector('.t-pax').value);
+    if (paxValue > 0) {
+      msg += `✅ ${routeName}\n`;
+    }
+  });
+
+  msg += `\n✈️ *Flight Status:* ${airline}\n\n`;
+  
+  const dInInput = document.querySelectorAll('.date-in')[0];
+  const dOutInputs = document.querySelectorAll('.date-out');
+  const dIn = formatDate(dInInput.value);
+  const dOut = formatDate(dOutInputs[dOutInputs.length-1].value);
+
+  msg += `Flight 01:-\nDeparture: ${dIn} | ${document.getElementById('f1-dep').value || "Karachi: 01:45"}\n`;
+  msg += `Arrival: ${dIn} | ${document.getElementById('f1-arr').value || "Jeddah: 04:55"}\n\n`;
+
+  msg += `Flight 02:-\nDeparture: ${dOut} | ${document.getElementById('f2-dep').value || "Jeddah: 06:15"}\n`;
+  msg += `Arrival: ${dOut} | ${document.getElementById('f2-arr').value || "Karachi: 12:15"}\n\n`;
+
+  msg += `🎁 *Package Includes:*\n⭐ Umrah Visa Processing\n⭐ Medical Insurance (KSA)\n⭐ Return Air Ticket (${airline})\n⭐ Hotel Accommodation\n⭐ Luxury Transport (${vehicle})\n⭐ Ziyarats of Makkah & Madinah\n⭐ 24/7 Ground Support Assistance\n\n`;
+
+  msg += `💰 *Package Cost:* RS. ${document.getElementById('perPersonPkr').innerText}/- Per Person (Avg)\n\n`;
+  msg += `📞 *Contact:* M.Umer Farooq Khan\n📱 *WhatsApp:* 03000-883553\n📧 *Email:* umrah@travelwala.pk\n\n`;
+  msg += `✈️ _Your Trusted Travel Partner_`;
+
+  document.getElementById('packageMessage').value = msg;
+}
+
+function copyMessage() {
+  const textarea = document.getElementById('packageMessage');
+  if(!textarea.value) { alert("Pehle message generate karein!"); return; }
+  textarea.select();
+  document.execCommand('copy');
+  alert("Message Copied!");
+}
+
+
+function downloadPDF() {
+  const element = document.getElementById('package-content');
+  const opt = {
+    margin: 10,
+    filename: 'Umrah-Package-TravelWala.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orienDowtation: 'portrait' }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
+function addHotelRow() {
+  const tbody = document.querySelector('#hotelTable tbody');
+  const r = tbody.insertRow();
+  r.innerHTML = `<td><input value="Makkah"></td><td><input placeholder="Hotel Name"></td><td><input type="date" class="date-in" onchange="syncDates()"></td><td><input type="date" class="date-out" onchange="syncDates()"></td><td class="nights-cell">0</td><td><input type="number" class="rate-input" value="0" oninput="calculate()"></td><td class="hotel-total-cell">0</td>`;
+}
+</script>
+</body>
+</html>
